@@ -1,25 +1,14 @@
-from rest_framework import viewsets, permissions
+# orders/views.py
+from rest_framework import viewsets
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, OrderItemSerializer
 
-# ============================
-# ViewSet pour Order
-# ============================
+# Order ViewSet
 class OrderViewSet(viewsets.ModelViewSet):
-    """
-    CRUD complet pour les commandes principales
-    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.AllowAny]  # ou IsAuthenticated si nécessaire
 
-# ============================
-# ViewSet pour OrderItem
-# ============================
+# OrderItem ViewSet
 class OrderItemViewSet(viewsets.ModelViewSet):
-    """
-    CRUD pour les détails de commande
-    """
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = [permissions.AllowAny]  # ou IsAuthenticated

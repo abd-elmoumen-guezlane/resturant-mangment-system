@@ -1,17 +1,25 @@
 from rest_framework import serializers
 from .models import Category, MenuItem
 
-# Serializer pour les catégories
+# Category Serializer
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
 
 
-# Serializer pour les plats / menu items
+# MenuItem Serializer
 class MenuItemSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)  # inclut les infos de la catégorie
+    # Nested read-only pour affichage
+    category = CategorySerializer(read_only=True)
+    # Pour création/modification
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source='category',
+        write_only=True
+    )
 
     class Meta:
         model = MenuItem
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'price', 'available', 'category', 'category_id']
+        read_only_fields = ['id', 'category']
