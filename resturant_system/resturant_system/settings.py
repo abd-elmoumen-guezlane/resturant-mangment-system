@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'restaurant_service',
     'worker_service',
     'utils',
+    'rest_framework',
     
 ]
 
