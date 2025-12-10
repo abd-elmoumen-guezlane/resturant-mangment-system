@@ -3,13 +3,16 @@ from .models import DeliveryProfile, Delivery
 from orders.serializers import OrderSerializer
 from orders.models import Order
 
-
 # DeliveryProfile Serializer
 class DeliveryProfileSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_nom = serializers.CharField(source='user.nom', read_only=True)
+    user_prenom = serializers.CharField(source='user.prenom', read_only=True)
+    
     class Meta:
         model = DeliveryProfile
-        fields = ['id', 'user', 'phone', 'vehicle_type', 'is_available']
-        read_only_fields = ['id']
+        fields = ['id', 'user', 'user_email', 'user_nom', 'user_prenom', 'phone', 'vehicle_type', 'is_available']
+        read_only_fields = ['id', 'user']
 
 # Delivery Serializer
 class DeliverySerializer(serializers.ModelSerializer):
@@ -25,7 +28,8 @@ class DeliverySerializer(serializers.ModelSerializer):
     delivery_person_id = serializers.PrimaryKeyRelatedField(
         queryset=DeliveryProfile.objects.all(),
         source='delivery_person',
-        write_only=True
+        write_only=True,
+        required=False
     )
 
     class Meta:

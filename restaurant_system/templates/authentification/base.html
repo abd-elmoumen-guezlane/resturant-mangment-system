@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Authentification - Restaurant Management{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 50%, #ff9800 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 152, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(211, 47, 47, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            width: 100%;
+            max-width: 480px;
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '🍽️';
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 15px;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 45px 40px;
+            background: #fafafa;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #5d4037;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            background: white;
+            color: #333;
+        }
+
+        .form-group input:focus {
+            border-color: #f57c00;
+            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(211, 47, 47, 0.5);
+            background: linear-gradient(135deg, #c62828 0%, #e65100 100%);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .alert.error {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #757575;
+        }
+
+        .link a {
+            color: #f57c00;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .link a:hover {
+            color: #d32f2f;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 30px 25px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            {% block header %}
+            <h1>🍽️ Restaurant Management</h1>
+            <p>Système de gestion de restaurant</p>
+            {% endblock %}
+        </div>
+        <div class="form-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

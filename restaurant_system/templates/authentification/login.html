@@ -1,0 +1,37 @@
+{% extends 'authentification/base.html' %}
+
+{% block title %}Connexion - Restaurant Management{% endblock %}
+
+{% block header %}
+<h1>Connexion</h1>
+<p>Connectez-vous à votre compte</p>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" action="{% url 'login-page' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Mot de passe *</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+    </div>
+
+    <button type="submit" class="btn">Se connecter</button>
+</form>
+
+<div class="link">
+    Vous n'avez pas de compte ? <a href="{% url 'register-page' %}">S'inscrire</a>
+</div>
+{% endblock %}

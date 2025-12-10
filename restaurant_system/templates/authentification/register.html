@@ -1,0 +1,47 @@
+{% extends 'authentification/base.html' %}
+
+{% block title %}Inscription - Restaurant Management{% endblock %}
+
+{% block header %}
+<h1>Créer un compte</h1>
+<p>Inscrivez-vous pour commencer</p>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" action="{% url 'register-page' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+    </div>
+
+    <div class="form-group">
+        <label for="nom">Nom *</label>
+        <input type="text" id="nom" name="nom" required autocomplete="family-name">
+    </div>
+
+    <div class="form-group">
+        <label for="prenom">Prénom *</label>
+        <input type="text" id="prenom" name="prenom" required autocomplete="given-name">
+    </div>
+
+    <div class="form-group">
+        <label for="password">Mot de passe *</label>
+        <input type="password" id="password" name="password" required autocomplete="new-password" minlength="8">
+    </div>
+
+    <button type="submit" class="btn">S'inscrire</button>
+</form>
+
+<div class="link">
+    Vous avez déjà un compte ? <a href="{% url 'login-page' %}">Se connecter</a>
+</div>
+{% endblock %}

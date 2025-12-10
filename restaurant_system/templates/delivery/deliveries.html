@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Livraisons</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 50%, #ff9800 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 152, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(211, 47, 47, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 4px solid #f57c00;
+        }
+
+        .header h1 {
+            color: #5d4037;
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-top: 4px solid #f57c00;
+        }
+
+        .delivery-item {
+            border: 2px solid #ffe0b2;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+        }
+
+        .delivery-item:hover {
+            border-color: #f57c00;
+            box-shadow: 0 8px 25px rgba(245, 124, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ffebee;
+        }
+
+        .delivery-header h3 {
+            color: #5d4037;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .status {
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status.pending {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+            border: 2px solid #ff9800;
+        }
+
+        .status.on_the_way {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1565c0;
+            border: 2px solid #2196f3;
+        }
+
+        .status.delivered {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .delivery-info {
+            margin: 12px 0;
+            color: #5d4037;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delivery-info strong {
+            color: #d32f2f;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        .form-inline {
+            margin-top: 20px;
+        }
+
+        .form-inline select {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 15px;
+            background: white;
+            color: #5d4037;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .form-inline select:focus {
+            outline: none;
+            border-color: #f57c00;
+            box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #757575;
+        }
+
+        .empty-state::before {
+            content: '📦';
+            font-size: 64px;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .alert.success {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert.error {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            border-left: 4px solid #d32f2f;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .delivery-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Mes Livraisons</h1>
+            <div class="header-actions">
+                <a href="{% url 'delivery-profile' %}" class="btn">👤 Mon Profil</a>
+                <a href="{% url 'logout' %}" class="btn btn-logout">🚪 Déconnexion</a>
+            </div>
+        </div>
+
+        <div class="card">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if deliveries %}
+                {% for delivery in deliveries %}
+                <div class="delivery-item">
+                    <div class="delivery-header">
+                        <h3>🚚 Livraison #{{ delivery.id }}</h3>
+                        <span class="status {{ delivery.status }}">
+                            {% if delivery.status == 'pending' %}⏳ En attente
+                            {% elif delivery.status == 'on_the_way' %}🚗 En route
+                            {% elif delivery.status == 'delivered' %}✅ Livrée
+                            {% else %}{{ delivery.status }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="delivery-info">
+                        <strong>📋 Commande:</strong> 
+                        <span>#{{ delivery.order.id }} - {{ delivery.order.customer_name }}</span>
+                    </div>
+                    <div class="delivery-info">
+                        <strong>📍 Adresse:</strong> 
+                        <span>{{ delivery.address }}</span>
+                    </div>
+                    <div class="delivery-info">
+                        <strong>📅 Date:</strong> 
+                        <span>{{ delivery.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% if delivery.status != 'delivered' %}
+                    <form method="POST" action="{% url 'delivery-list' %}" class="form-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="delivery_id" value="{{ delivery.id }}">
+                        <select name="status" onchange="this.form.submit()" style="width: 100%; max-width: 300px;">
+                            <option value="pending" {% if delivery.status == 'pending' %}selected{% endif %}>⏳ En attente</option>
+                            <option value="on_the_way" {% if delivery.status == 'on_the_way' %}selected{% endif %}>🚗 En route</option>
+                            <option value="delivered" {% if delivery.status == 'delivered' %}selected{% endif %}>✅ Livrée</option>
+                        </select>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p style="font-size: 18px; font-weight: 600;">Aucune livraison assignée</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
