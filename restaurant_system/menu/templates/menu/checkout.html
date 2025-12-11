@@ -1,0 +1,256 @@
+{% extends 'menu/base.html' %}
+
+{% block title %}Finaliser la commande - Restaurant{% endblock %}
+
+{% block header_title %}✓ Finaliser ma commande{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 25px;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        border: 2px solid #ffe0b2;
+    }
+
+    .form-section h2 {
+        color: #d32f2f;
+        font-size: 22px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #ffebee;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #5d4037;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #f57c00;
+        box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .order-summary {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+        border: 2px solid #f57c00;
+        border-radius: 15px;
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+
+    .order-summary h2 {
+        color: #d32f2f;
+        font-size: 22px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #ffe0b2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #ffe0b2;
+        font-size: 14px;
+        color: #5d4037;
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-item-name {
+        flex: 1;
+        font-weight: 600;
+    }
+
+    .summary-item-qty {
+        color: #757575;
+        margin: 0 10px;
+    }
+
+    .summary-item-price {
+        font-weight: 700;
+        color: #d32f2f;
+    }
+
+    .summary-total {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #f57c00;
+        display: flex;
+        justify-content: space-between;
+        font-size: 24px;
+        font-weight: 700;
+        color: #d32f2f;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(56, 142, 60, 0.4);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(56, 142, 60, 0.5);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #f57c00;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: #d32f2f;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+            max-height: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <a href="{% url 'cart' %}" class="back-link">⬅️ Retour au panier</a>
+    
+    <div class="checkout-container">
+        <div class="form-section">
+            <h2>📝 Vos informations</h2>
+            <form method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.customer_name.id_for_label }}">
+                        Nom complet *
+                    </label>
+                    {{ form.customer_name }}
+                    {% if form.customer_name.errors %}
+                        <small style="color: #d32f2f;">{{ form.customer_name.errors }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.customer_phone.id_for_label }}">
+                        Téléphone *
+                    </label>
+                    {{ form.customer_phone }}
+                    {% if form.customer_phone.errors %}
+                        <small style="color: #d32f2f;">{{ form.customer_phone.errors }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.customer_email.id_for_label }}">
+                        Email (optionnel)
+                    </label>
+                    {{ form.customer_email }}
+                    {% if form.customer_email.errors %}
+                        <small style="color: #d32f2f;">{{ form.customer_email.errors }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.address.id_for_label }}">
+                        Adresse de livraison *
+                    </label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <small style="color: #d32f2f;">{{ form.address.errors }}</small>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🚀 Valider ma commande
+                </button>
+            </form>
+        </div>
+
+        <div class="order-summary">
+            <h2>📦 Récapitulatif</h2>
+            
+            {% for item in cart_items %}
+            <div class="summary-item">
+                <span class="summary-item-name">{{ item.menu_item.name }}</span>
+                <span class="summary-item-qty">× {{ item.quantity }}</span>
+                <span class="summary-item-price">{{ item.subtotal }} DA</span>
+            </div>
+            {% endfor %}
+
+            <div class="summary-total">
+                <span>Total:</span>
+                <span>{{ total }} DA</span>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px; border-left: 4px solid #4caf50;">
+                <p style="font-size: 13px; color: #2e7d32; margin: 0;">
+                    <strong>✓ Livraison gratuite</strong><br>
+                    Votre commande sera livrée dans les meilleurs délais !
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

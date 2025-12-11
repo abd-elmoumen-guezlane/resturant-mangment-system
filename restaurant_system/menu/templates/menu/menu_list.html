@@ -1,0 +1,238 @@
+{% extends 'menu/base.html' %}
+
+{% block title %}Menu - Restaurant{% endblock %}
+
+{% block header_title %}🍽️ Notre Menu{% endblock %}
+
+{% block extra_css %}
+<style>
+    .categories {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+
+    .category-link {
+        background: white;
+        border: 2px solid #e0e0e0;
+        padding: 10px 24px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+        color: #5d4037;
+    }
+
+    .category-link:hover, .category-link.active {
+        background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+    }
+
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .menu-item {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+        border: 2px solid #ffe0b2;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        border-color: #f57c00;
+    }
+
+    .item-icon {
+        width: 100%;
+        height: 180px;
+        background: linear-gradient(135deg, #ffebee 0%, #fff3e0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        border-bottom: 2px solid #ffe0b2;
+    }
+
+    .item-content {
+        padding: 20px;
+    }
+
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+
+    .item-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #5d4037;
+        flex: 1;
+    }
+
+    .item-price {
+        font-size: 20px;
+        font-weight: 700;
+        color: #d32f2f;
+        white-space: nowrap;
+    }
+
+    .item-category {
+        display: inline-block;
+        background: #ffe0b2;
+        color: #e65100;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .item-description {
+        color: #757575;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        min-height: 42px;
+    }
+
+    .add-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .quantity-input {
+        width: 70px;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .quantity-input:focus {
+        outline: none;
+        border-color: #f57c00;
+        box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+    }
+
+    .add-btn {
+        flex: 1;
+        background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+    }
+
+    .add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #757575;
+    }
+
+    .empty-state::before {
+        content: '🍽️';
+        font-size: 64px;
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="categories">
+        <a href="{% url 'menu-list' %}?category=all" 
+           class="category-link {% if current_category == 'all' %}active{% endif %}">
+            ✨ Tous
+        </a>
+        {% for category in categories %}
+        <a href="{% url 'menu-list' %}?category={{ category.slug }}" 
+           class="category-link {% if current_category == category.slug %}active{% endif %}">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    {% if menu_items %}
+    <div class="menu-grid">
+        {% for item in menu_items %}
+        <div class="menu-item">
+            <div class="item-icon">
+                {% if item.category.name == 'Entrées' or item.category.name == 'Entrees' %}🥗
+                {% elif item.category.name == 'Plats' or item.category.name == 'Plats principaux' %}🍝
+                {% elif item.category.name == 'Desserts' %}🍰
+                {% elif item.category.name == 'Boissons' %}🥤
+                {% else %}🍽️{% endif %}
+            </div>
+            <div class="item-content">
+                <span class="item-category">{{ item.category.name }}</span>
+                <div class="item-header">
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-price">{{ item.price }} DA</div>
+                </div>
+                <div class="item-description">
+                    {% if item.description %}
+                        {{ item.description }}
+                    {% else %}
+                        Délicieux plat de notre menu.
+                    {% endif %}
+                </div>
+                <form method="POST" action="{% url 'menu-list' %}" class="add-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="menu_item_id" value="{{ item.id }}">
+                    <input type="number" 
+                           name="quantity" 
+                           value="1" 
+                           min="1" 
+                           class="quantity-input">
+                    <button type="submit" class="add-btn">
+                        ➕ Ajouter
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p style="font-size: 18px; font-weight: 600;">Aucun plat disponible dans cette catégorie</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

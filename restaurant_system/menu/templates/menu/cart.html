@@ -1,0 +1,281 @@
+{% extends 'menu/base.html' %}
+
+{% block title %}Panier - Restaurant{% endblock %}
+
+{% block header_title %}🛒 Mon Panier{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+        border: 2px solid #ffe0b2;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+        border-color: #f57c00;
+        box-shadow: 0 4px 15px rgba(245, 124, 0, 0.15);
+    }
+
+    .item-icon {
+        font-size: 48px;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #5d4037;
+        margin-bottom: 5px;
+    }
+
+    .item-category {
+        display: inline-block;
+        background: #ffe0b2;
+        color: #e65100;
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .item-price {
+        color: #757575;
+        font-size: 14px;
+    }
+
+    .item-price strong {
+        color: #d32f2f;
+        font-size: 16px;
+    }
+
+    .item-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .quantity-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .quantity-input {
+        width: 70px;
+        padding: 8px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .update-btn {
+        background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .update-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(56, 142, 60, 0.4);
+    }
+
+    .remove-btn {
+        background: none;
+        border: none;
+        color: #d32f2f;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 4px 8px;
+        transition: color 0.3s ease;
+    }
+
+    .remove-btn:hover {
+        color: #b71c1c;
+    }
+
+    .cart-summary {
+        background: linear-gradient(135deg, #ffebee 0%, #fff3e0 100%);
+        border: 2px solid #f57c00;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 25px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #5d4037;
+    }
+
+    .summary-row.total {
+        font-size: 24px;
+        font-weight: 700;
+        color: #d32f2f;
+        padding-top: 15px;
+        border-top: 2px solid #ffe0b2;
+        margin-bottom: 20px;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .cart-actions .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+        color: #757575;
+    }
+
+    .empty-cart::before {
+        content: '🛒';
+        font-size: 80px;
+        display: block;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-cart h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #5d4037;
+    }
+
+    @media (max-width: 768px) {
+        .cart-item {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .item-actions {
+            width: 100%;
+            align-items: center;
+        }
+
+        .cart-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="cart-container">
+        {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="cart-item">
+                <div class="item-icon">
+                    {% if item.menu_item.category.name == 'Entrées' or item.menu_item.category.name == 'Entrees' %}🥗
+                    {% elif item.menu_item.category.name == 'Plats' or item.menu_item.category.name == 'Plats principaux' %}🍝
+                    {% elif item.menu_item.category.name == 'Desserts' %}🍰
+                    {% elif item.menu_item.category.name == 'Boissons' %}🥤
+                    {% else %}🍽️{% endif %}
+                </div>
+                <div class="item-details">
+                    <div class="item-name">{{ item.menu_item.name }}</div>
+                    <span class="item-category">{{ item.menu_item.category.name }}</span>
+                    <div class="item-price">
+                        {{ item.quantity }} × {{ item.menu_item.price }} DA = 
+                        <strong>{{ item.subtotal }} DA</strong>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <form method="POST" action="{% url 'cart' %}" class="quantity-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="item_id" value="{{ item.menu_item.id }}">
+                        <input type="number" 
+                               name="quantity" 
+                               value="{{ item.quantity }}" 
+                               min="0" 
+                               class="quantity-input">
+                        <button type="submit" class="update-btn">✓ Modifier</button>
+                    </form>
+                    <form method="POST" action="{% url 'cart' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="item_id" value="{{ item.menu_item.id }}">
+                        <input type="hidden" name="quantity" value="0">
+                        <button type="submit" class="remove-btn">🗑️ Supprimer</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Nombre d'articles:</span>
+                    <span><strong>{{ cart_count }}</strong></span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>{{ total }} DA</span>
+                </div>
+                <div class="cart-actions">
+                    <a href="{% url 'menu-list' %}" class="btn btn-secondary">
+                        ⬅️ Continuer mes achats
+                    </a>
+                    <a href="{% url 'checkout' %}" class="btn btn-success">
+                        ✓ Passer commande
+                    </a>
+                </div>
+                <form method="POST" action="{% url 'cart' %}" style="margin-top: 15px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="clear">
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">
+                        🗑️ Vider le panier
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <div class="empty-cart">
+                <h3>Votre panier est vide</h3>
+                <p style="margin-bottom: 25px;">Ajoutez des plats délicieux à votre panier !</p>
+                <a href="{% url 'menu-list' %}" class="btn">
+                    🍽️ Voir le menu
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

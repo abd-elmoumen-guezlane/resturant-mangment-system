@@ -1,0 +1,288 @@
+{% extends 'menu/base.html' %}
+
+{% block title %}Commande confirmée - Restaurant{% endblock %}
+
+{% block header_title %}✓ Commande confirmée{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-container {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .success-icon {
+        font-size: 100px;
+        margin-bottom: 20px;
+        animation: scaleIn 0.5s ease;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .success-title {
+        color: #2e7d32;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .success-subtitle {
+        color: #757575;
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .order-card {
+        background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+        border: 2px solid #4caf50;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .order-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2e7d32;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #c8e6c9;
+        text-align: center;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #c8e6c9;
+        font-size: 15px;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #757575;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: #5d4037;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        color: #e65100;
+        border: 2px solid #ff9800;
+    }
+
+    .items-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #c8e6c9;
+    }
+
+    .items-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2e7d32;
+        margin-bottom: 15px;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        color: #5d4037;
+    }
+
+    .item-name {
+        font-weight: 600;
+    }
+
+    .item-qty {
+        color: #757575;
+        margin: 0 10px;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .total-row {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid #4caf50;
+        display: flex;
+        justify-content: space-between;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2e7d32;
+    }
+
+    .actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .actions .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+
+    .delivery-info {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border: 2px solid #ff9800;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .delivery-info h3 {
+        color: #e65100;
+        font-size: 18px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .delivery-info p {
+        color: #5d4037;
+        line-height: 1.6;
+        margin: 8px 0;
+    }
+
+    @media (max-width: 768px) {
+        .actions {
+            flex-direction: column;
+        }
+
+        .success-icon {
+            font-size: 80px;
+        }
+
+        .success-title {
+            font-size: 26px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="confirmation-container">
+        <div class="success-icon">🎉</div>
+        <h1 class="success-title">Commande confirmée !</h1>
+        <p class="success-subtitle">
+            Merci {{ order.customer_name }}, votre commande a été enregistrée avec succès.
+        </p>
+
+        <div class="order-card">
+            <div class="order-number">
+                📋 Commande #{{ order.id }}
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Client:</span>
+                <span class="info-value">{{ order.customer_name }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Téléphone:</span>
+                <span class="info-value">{{ order.customer_phone }}</span>
+            </div>
+
+            {% if order.customer_email %}
+            <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ order.customer_email }}</span>
+            </div>
+            {% endif %}
+
+            <div class="info-row">
+                <span class="info-label">Date:</span>
+                <span class="info-value">{{ order.created_at|date:"d/m/Y à H:i" }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Statut:</span>
+                <span class="info-value">
+                    <span class="status-badge status-pending">
+                        ⏳ {{ order.get_status_display }}
+                    </span>
+                </span>
+            </div>
+
+            <div class="items-section">
+                <div class="items-title">📦 Articles commandés:</div>
+                
+                {% for item in order.items.all %}
+                <div class="order-item">
+                    <span class="item-name">{{ item.menu_item.name }}</span>
+                    <span>
+                        <span class="item-qty">× {{ item.quantity }}</span>
+                        <span class="item-price">{{ item.price }} DA</span>
+                    </span>
+                </div>
+                {% endfor %}
+
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span>{{ order.total_price }} DA</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="delivery-info">
+            <h3>🚚 Informations de livraison</h3>
+            <p><strong>Adresse:</strong><br>{{ delivery.address }}</p>
+            <p><strong>Statut:</strong> 
+                <span class="status-badge status-pending">
+                    {{ delivery.get_status_display }}
+                </span>
+            </p>
+            <p style="margin-top: 15px; font-size: 14px; color: #757575;">
+                💡 Votre commande sera préparée dans les plus brefs délais. 
+                Vous serez contacté par téléphone pour confirmer la livraison.
+            </p>
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'menu-list' %}" class="btn">
+                🍽️ Retour au menu
+            </a>
+            <a href="{% url 'menu-list' %}" class="btn btn-success">
+                🔄 Nouvelle commande
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,6 +20,7 @@ router.register(r"menu-items", MenuItemViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),  # toutes les routes DRF
-    path("", include("users.urls")),  # URLs pour users
+    path("", include("users.urls")),  # URLs pour users (auth)
     path("", include("delivery.urls")),  # URLs pour les templates de livraison
+    path("", include("menu.urls")),  # URLs pour les templates de menu client
 ]

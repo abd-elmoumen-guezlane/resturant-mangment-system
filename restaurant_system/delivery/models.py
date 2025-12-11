@@ -17,8 +17,8 @@ class DeliveryProfile(models.Model):
     )
     is_available = models.BooleanField(default=True)
 
-    def __str__(self):
-        return f"Livreur : {self.user.username}"
+def __str__(self):
+        return f"Livreur : {self.user.email}"
 
 
 # ============================================
