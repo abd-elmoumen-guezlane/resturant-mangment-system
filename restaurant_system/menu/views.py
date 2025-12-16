@@ -31,6 +31,18 @@ class MenuItemViewSet(viewsets.ModelViewSet):
 # Vues Templates pour les clients
 # ============================================
 
+def home_view(request):
+    """Page d'accueil du restaurant"""
+    # Calculer le nombre d'articles dans le panier
+    cart = request.session.get('cart', {})
+    cart_count = sum(cart.values())
+    
+    context = {
+        'cart_count': cart_count,
+    }
+    return render(request, 'menu/home.html', context)
+
+
 def menu_list_view(request):
     """Affiche le menu avec possibilité de filtrer par catégorie"""
     category_slug = request.GET.get('category', 'all')

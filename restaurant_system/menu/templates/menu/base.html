@@ -179,6 +179,7 @@
             <h1>{% block header_title %}🍽️ Restaurant{% endblock %}</h1>
             <div class="header-actions">
                 {% block header_actions %}
+                <a href="{% url 'home' %}" class="btn">🏠 Accueil</a>
                 <a href="{% url 'menu-list' %}" class="btn">📋 Menu</a>
                 <a href="{% url 'cart' %}" class="btn">
                     🛒 Panier
