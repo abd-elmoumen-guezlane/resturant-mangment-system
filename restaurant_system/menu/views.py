@@ -7,7 +7,12 @@ from .serializers import CategorySerializer, MenuItemSerializer
 from .forms import CheckoutForm
 from orders.models import Order, OrderItem
 from delivery.models import Delivery
+import logging
 
+# Import des producers RabbitMQ
+from rabbitmq_config import OrderNotificationProducer
+
+logger = logging.getLogger(__name__)
 
 # ============================================
 # API ViewSets (existants)
@@ -133,7 +138,7 @@ def cart_view(request):
 
 
 def checkout_view(request):
-    """Passer la commande"""
+    """Passer la commande - AVEC RABBITMQ"""
     cart = request.session.get('cart', {})
     
     if not cart:
@@ -185,6 +190,27 @@ def checkout_view(request):
             
             # Calculer le total de la commande
             order.calculate_total()
+            
+            # ==========================================
+            # 🚀 ENVOYER MESSAGE RABBITMQ
+            # ==========================================
+            try:
+                success = OrderNotificationProducer.notify_new_order(
+                    order_id=order.id,
+                    customer_name=order.customer_name,
+                    total_price=order.total_price,
+                    items_count=len(cart_items)
+                )
+                
+                if success:
+                    logger.info(f"✅ Message RabbitMQ envoyé pour commande #{order.id}")
+                else:
+                    logger.warning(f"⚠️ Échec envoi message RabbitMQ pour commande #{order.id}")
+                    
+            except Exception as e:
+                # Ne pas bloquer la commande si RabbitMQ échoue
+                logger.error(f"❌ Erreur RabbitMQ: {e}")
+            # ==========================================
             
             # Vider le panier
             request.session['cart'] = {}

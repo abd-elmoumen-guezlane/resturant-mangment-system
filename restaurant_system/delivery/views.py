@@ -9,6 +9,9 @@ from users.decorators import jwt_required
 from .models import DeliveryProfile, Delivery
 from .serializers import DeliveryProfileSerializer, DeliverySerializer
 from users.models import Livreur
+import logging
+
+logger = logging.getLogger(__name__)
 
 # API Views (pour les API REST)
 class DeliveryProfileViewSet(viewsets.ModelViewSet):
@@ -49,11 +52,17 @@ class DeliveryViewSet(viewsets.ModelViewSet):
             return Delivery.objects.none()
 
     def perform_create(self, serializer):
+        """
+        Création d'une livraison sans RabbitMQ
+        """
         if 'delivery_person_id' not in serializer.validated_data:
             profile, _ = DeliveryProfile.objects.get_or_create(user=self.request.user)
-            serializer.save(delivery_person=profile)
+            delivery = serializer.save(delivery_person=profile)
         else:
-            serializer.save()
+            delivery = serializer.save()
+        
+        # Log la création de la livraison
+        logger.info(f"✅ Livraison créée #{delivery.id} pour commande #{delivery.order.id}")
 
 # Vue pour afficher le template du profil
 @jwt_required
@@ -93,9 +102,18 @@ def deliveries_view(request):
         new_status = request.POST.get('status')
         try:
             delivery = Delivery.objects.get(id=delivery_id, delivery_person=profile)
+            old_status = delivery.status
             delivery.status = new_status
             delivery.save()
+            
+            # Mettre à jour le statut de la commande si livraison terminée
+            if new_status == 'delivered':
+                delivery.order.status = 'completed'
+                delivery.order.save()
+                logger.info(f"📦 Commande #{delivery.order.id} marquée comme terminée")
+            
             messages.success(request, 'Statut mis à jour avec succès!')
+            logger.info(f"🚚 Livraison #{delivery_id}: {old_status} -> {new_status}")
             return redirect('delivery-list')
         except Delivery.DoesNotExist:
             messages.error(request, 'Livraison non trouvée')
